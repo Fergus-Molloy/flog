@@ -15,7 +15,7 @@
       ];
       perSystem = { self', pkgs, lib, ... }:
         let
-          db-name = "flog_dev";
+          db-name = "flog";
           pg-host = "127.0.0.1";
           postgres = {
             enable = true;
@@ -27,7 +27,7 @@
             ];
             initialScript.after = ''
               CREATE USER postgres WITH PASSWORD 'postgres' SUPERUSER;
-              GRANT ALL PRIVILEGES ON DATABASE ${db-name} TO postgres;
+              GRANT ALL PRIVILEGES ON DATABASE ${db-name}_dev TO postgres;
               GRANT ALL PRIVILEGES ON SCHEMA public TO postgres;
             '';
           };
@@ -71,7 +71,10 @@
                 nil
                 nixpkgs-fmt
                 (pkgs.writeShellScriptBin "pg-connect" ''
-                  PGPASSWORD="postgres" psql -U postgres -h "${pg-host}" -d "${db-name}"
+                  PGPASSWORD="postgres" psql -U postgres -h "${pg-host}" -d "${db-name}_dev"
+                '')
+                (pkgs.writeShellScriptBin "pg-connect-prod" ''
+                  psql -U "${db-name}" -h "handler.home" -d "${db-name}_prod"
                 '')
               ] ++ lib.optional stdenv.isLinux inotify-tools;
           };
