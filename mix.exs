@@ -4,13 +4,29 @@ defmodule Flog.MixProject do
   def project do
     [
       app: :flog,
-      version: "0.1.0",
+      version: get_version(),
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
+  end
+
+  defp get_version() do
+    {tag, 0} = System.cmd("git", ["describe", "--tags", "--abbrev=0"])
+    version = tag |> String.trim_leading("v") |> String.trim_trailing()
+
+    {points, 0} = System.cmd("git", ["tag", "--points-at", "HEAD"])
+
+    case points do
+      "" ->
+        {commit, 0} = System.cmd("git", ["rev-parse", "--short", "HEAD"])
+        version <> "-" <> commit
+
+      _ ->
+        version
+    end
   end
 
   # Configuration for the OTP application.
