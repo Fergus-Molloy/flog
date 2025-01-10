@@ -13,20 +13,8 @@ defmodule Flog.MixProject do
     ]
   end
 
-  defp get_version() do
-    {tag, 0} = System.cmd("git", ["describe", "--tags", "--abbrev=0"])
-    version = tag |> String.trim_leading("v") |> String.trim_trailing()
-
-    {points, 0} = System.cmd("git", ["tag", "--points-at", "HEAD"])
-
-    case points do
-      "" ->
-        {commit, 0} = System.cmd("git", ["rev-parse", "--short", "HEAD"])
-        version <> "-" <> commit
-
-      _ ->
-        version
-    end
+  def get_version() do
+    System.get_env("VERSION", "0.2.0")
   end
 
   # Configuration for the OTP application.
@@ -59,13 +47,13 @@ defmodule Flog.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:heroicons,
-       github: "tailwindlabs/heroicons",
-       tag: "v2.1.1",
-       sparse: "optimized",
-       app: false,
-       compile: false,
-       depth: 1},
+      # {:heroicons,
+      #  github: "tailwindlabs/heroicons",
+      #  tag: "v2.1.1",
+      #  sparse: "optimized",
+      #  app: false,
+      #  compile: false,
+      #  depth: 1},
       {:swoosh, "~> 1.5"},
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 1.0"},
