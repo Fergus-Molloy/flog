@@ -62,6 +62,9 @@ config :flog, FlogWeb.Endpoint,
     ]
   ]
 
+# don't log ips in dev mode
+config :flog, FlogWeb.IpLogger, log_path: "./flog.log"
+
 # Enable dev routes for dashboard and mailbox
 config :flog, dev_routes: true
 
