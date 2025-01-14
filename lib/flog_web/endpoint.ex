@@ -34,6 +34,8 @@ defmodule FlogWeb.Endpoint do
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :flog
   end
 
+  plug FlogWeb.IpLogger
+
   plug Phoenix.LiveDashboard.RequestLogger,
     param_key: "request_logger",
     cookie_key: "request_logger"
