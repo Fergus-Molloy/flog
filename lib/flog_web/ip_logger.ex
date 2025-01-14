@@ -35,11 +35,9 @@ defmodule FlogWeb.IpLogger do
           String.starts_with?(path, rp)
       end)
 
-    if length(matched_routes) < 2 do
-      if path != "/" do
-        IO.puts("route #{path} is valid? false")
-        write_ip_log(file, ip, path)
-      end
+    if length(matched_routes) < 2 && path != "/" do
+      IO.puts("route #{path} is valid? false")
+      write_ip_log(file, ip, path)
     end
 
     IO.puts("route #{path} is valid? true")
