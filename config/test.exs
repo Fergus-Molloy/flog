@@ -32,6 +32,9 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
+# Don't log ips in dev mode
+config :flog, FlogWeb.IpLogger, log_path: "/dev/null"
+
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
