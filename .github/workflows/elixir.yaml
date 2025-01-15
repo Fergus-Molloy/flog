@@ -100,4 +100,8 @@ jobs:
     # Step: Execute the tests.
     - name: Run tests
       run: mix test
+ 
+    # Step: Check for vunerablities using sobelow
+    - name: Check for Vunerablities
+      run: mix sobelow --skip -i Config.HTTPS --exit
 

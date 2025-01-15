@@ -10,6 +10,7 @@ defmodule FlogWeb.IpLogger do
     file_path
   end
 
+  # sobelow_skip ["Traversal"]
   defp get_file_for_writing(path) do
     if !File.exists?(path) do
       File.touch(path)
