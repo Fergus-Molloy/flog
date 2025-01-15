@@ -13,11 +13,23 @@ defmodule FlogWeb.IpLogger do
 
   defp write_ip_log(
          file,
-         %Plug.Conn{request_path: route, remote_ip: ip, method: verb, status: status}
+         %Plug.Conn{
+           request_path: route,
+           remote_ip: req_ip,
+           method: verb,
+           status: status
+         } = conn
        ) do
+    # respect x-forwarded-for
+    ip =
+      case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
+        [] -> ip_to_bin(req_ip)
+        [ip] -> ip
+      end
+
     case File.write(
            file,
-           "#{ip_to_bin(ip)} - [#{DateTime.utc_now()}] - #{verb} #{route} #{status}\n",
+           "#{ip} - [#{DateTime.utc_now()}] - #{verb} #{route} #{status}\n",
            [:append]
          ) do
       {:error, reason} ->
