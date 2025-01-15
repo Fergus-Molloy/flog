@@ -45,13 +45,7 @@ defmodule FlogWeb.Router do
 
   @impl Plug.ErrorHandler
   def handle_errors(conn, %{kind: _kind}) do
-    file_path =
-      case Application.fetch_env!(:flog, FlogWeb.IpLogger) |> Keyword.get(:log_path) do
-        nil -> "./flog.log"
-        path -> path
-      end
-
-    FlogWeb.IpLogger.call(conn, file_path)
+    FlogWeb.IpLogger.call(conn, [])
     :ok
   end
 end

@@ -5,10 +5,8 @@ defmodule FlogWeb.IpLogger do
         conn,
         _
       ) do
-    log_file = System.get_env("IP_LOG_FILE", "/dev/null")
+    log_file = System.get_env("IP_LOG_PATH", "/dev/null")
     write_ip_log(log_file, conn)
-
-    # File.close(file)
 
     conn
   end
