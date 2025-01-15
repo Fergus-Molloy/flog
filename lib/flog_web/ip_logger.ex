@@ -7,6 +7,8 @@ defmodule FlogWeb.IpLogger do
         path -> path
       end
 
+    IO.puts("Using ip access log at #{file_path}")
+
     file_path
   end
 
