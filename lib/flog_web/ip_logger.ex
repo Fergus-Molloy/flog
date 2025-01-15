@@ -26,11 +26,11 @@ defmodule FlogWeb.IpLogger do
         log_file
       ) do
     # will create file if it doesn't exist
-    file = get_file_for_writing(log_file)
+    # file = get_file_for_writing(log_file)
 
-    write_ip_log(file, conn)
+    write_ip_log(log_file, conn)
 
-    File.close(file)
+    # File.close(file)
 
     conn
   end
@@ -39,9 +39,10 @@ defmodule FlogWeb.IpLogger do
          file,
          %Plug.Conn{request_path: route, remote_ip: ip, method: verb, status: status}
        ) do
-    case :file.write(
+    case File.write(
            file,
-           "#{ip_to_bin(ip)} - [#{DateTime.utc_now()}] - #{verb} #{route} #{status}\n"
+           "#{ip_to_bin(ip)} - [#{DateTime.utc_now()}] - #{verb} #{route} #{status}\n",
+           [:append]
          ) do
       {:error, reason} ->
         IO.puts("Error writing ip log to file #{file}, reason #{reason}")
