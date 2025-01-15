@@ -52,6 +52,17 @@ defmodule FlogWeb.IpLogger do
   # ipv4
   defp ip_to_bin({_, _, _, _} = ip), do: Tuple.to_list(ip) |> Enum.join(".")
 
+  # ipv4 with port
+  defp ip_to_bin({_, _, _, _, port} = ip),
+    do: (Tuple.to_list(ip) |> Enum.take(4) |> Enum.join(".")) <> ":#{port}"
+
   # ipv6
   defp ip_to_bin({_, _, _, _, _, _, _, _} = ip), do: Tuple.to_list(ip) |> Enum.join(":")
+
+  # ipv6 with port
+  defp ip_to_bin(ip),
+    do:
+      "[" <>
+        (Tuple.to_list(ip) |> Enum.take(8) |> Enum.join(":")) <>
+        "]:#{List.last(Tuple.to_list(ip))}"
 end
