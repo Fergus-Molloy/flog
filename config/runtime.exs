@@ -65,6 +65,15 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  ip_log_path =
+    case System.get_env("IP_LOG_PATH", nil) do
+      # disable access log if env var not set
+      nil -> "/dev/null"
+      path -> path
+    end
+
+  config :flog, FlogWeb.IpLogger, log_path: ip_log_path
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
