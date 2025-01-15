@@ -81,6 +81,11 @@ jobs:
           ${{ runner.os }}-mix-${{ env.cache-name }}-
           ${{ runner.os }}-mix-
 
+    # Step: Download project dependencies. If unchanged, uses
+    # the cached version.
+    - name: Install dependencies
+      run: mix deps.get
+
       # Cache key based on Erlang/Elixir version and the mix.lock hash
     - name: Restore PLT cache
       id: plt_cache
@@ -110,10 +115,6 @@ jobs:
         path: |
           priv/plts
 
-    # Step: Download project dependencies. If unchanged, uses
-    # the cached version.
-    - name: Install dependencies
-      run: mix deps.get
 
     - name: Check deps for vunerablities
       run: mix deps.audit
