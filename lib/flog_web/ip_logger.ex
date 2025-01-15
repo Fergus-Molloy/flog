@@ -1,24 +1,11 @@
 defmodule FlogWeb.IpLogger do
-  def init(args) do
-    Keyword.get(args, :log_path, "/dev/null")
-  end
-
-  # sobelow_skip ["Traversal"]
-  defp get_file_for_writing(path) do
-    if !File.exists?(path) do
-      File.touch(path)
-    end
-
-    File.open!(path, [:binary, :append, :raw])
-  end
+  def init(_), do: :ok
 
   def call(
         conn,
-        log_file
+        _
       ) do
-    # will create file if it doesn't exist
-    # file = get_file_for_writing(log_file)
-
+    log_file = System.get_env("IP_LOG_FILE", "/dev/null")
     write_ip_log(log_file, conn)
 
     # File.close(file)
