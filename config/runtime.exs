@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :flog, FlogWeb.Endpoint, server: true
 end
 
+config :flog, FlogWeb.IpLogger, log_path: System.get_env("IP_LOG_PATH") || "/dev/null"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -64,8 +66,6 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
-
-  config :flog, FlogWeb.IpLogger, log_path: System.get_env("IP_LOG_PATH") || "/dev/null"
 
   # ## SSL Support
   #
