@@ -7,8 +7,6 @@ import Config
 # before starting your production server.
 config :flog, FlogWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :flog, FlogWeb.IpLogger, log_path: "/dev/null"
-
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Flog.Finch
 

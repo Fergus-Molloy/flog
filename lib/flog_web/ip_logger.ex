@@ -1,15 +1,6 @@
 defmodule FlogWeb.IpLogger do
-  def init(_) do
-    # create log file and stuff here
-    file_path =
-      case Application.fetch_env!(:flog, FlogWeb.IpLogger) |> Keyword.get(:log_path) do
-        nil -> "./flog.log"
-        path -> path
-      end
-
-    IO.puts("Using ip access log at #{file_path}")
-
-    file_path
+  def init(args) do
+    Keyword.get(args, :log_path, "/dev/null")
   end
 
   # sobelow_skip ["Traversal"]

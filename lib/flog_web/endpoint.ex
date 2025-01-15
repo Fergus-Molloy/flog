@@ -51,5 +51,5 @@ defmodule FlogWeb.Endpoint do
   plug Plug.Session, @session_options
   plug FlogWeb.Router
 
-  plug FlogWeb.IpLogger
+  plug FlogWeb.IpLogger, log_path: System.get_env("IP_LOG_PATH", "/dev/null")
 end
