@@ -1,4 +1,5 @@
 defmodule FlogWeb.Router do
+  use Plug.ErrorHandler
   use FlogWeb, :router
 
   pipeline :browser do
@@ -40,5 +41,17 @@ defmodule FlogWeb.Router do
       live_dashboard "/dashboard", metrics: FlogWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  @impl Plug.ErrorHandler
+  def handle_errors(conn, %{kind: _kind}) do
+    file_path =
+      case Application.fetch_env!(:flog, FlogWeb.IpLogger) |> Keyword.get(:log_path) do
+        nil -> "./flog.log"
+        path -> path
+      end
+
+    FlogWeb.IpLogger.call(conn, file_path)
+    :ok
   end
 end

@@ -1,9 +1,4 @@
 defmodule FlogWeb.IpLogger do
-  use Phoenix.VerifiedRoutes,
-    endpoint: FlogWeb.Endpoint,
-    router: FlogWeb.Router,
-    statics: FlogWeb.static_paths()
-
   def init(_) do
     # create log file and stuff here
     file_path =
@@ -12,40 +7,39 @@ defmodule FlogWeb.IpLogger do
         path -> path
       end
 
-    routes =
-      Phoenix.Router.routes(FlogWeb.Router)
-      |> Enum.map(fn %{path: route_path} ->
-        String.split(route_path, ":", parts: 2) |> hd()
-      end)
+    file_path
+  end
 
-    {file_path, routes}
+  defp get_file_for_writing(path) do
+    if !File.exists?(path) do
+      File.touch(path)
+    end
+
+    File.open!(path, [:binary, :append, :raw])
   end
 
   def call(
-        %Plug.Conn{request_path: path, remote_ip: ip} = conn,
-        {log_file, routes}
+        conn,
+        log_file
       ) do
     # will create file if it doesn't exist
-    file = File.open!(log_file, [:append, :raw])
+    file = get_file_for_writing(log_file)
 
-    matched_routes =
-      routes
-      |> Enum.filter(fn
-        rp ->
-          String.starts_with?(path, rp)
-      end)
+    write_ip_log(file, conn)
 
-    if length(matched_routes) < 2 && path != "/" do
-      IO.puts("route #{path} is valid? false")
-      write_ip_log(file, ip, path)
-    end
+    File.close(file)
 
-    IO.puts("route #{path} is valid? true")
     conn
   end
 
-  defp write_ip_log(file, ip, route) do
-    case :file.write(file, "[#{DateTime.utc_now()}] Req from #{ip_to_bin(ip)} for #{route}\n") do
+  defp write_ip_log(
+         file,
+         %Plug.Conn{request_path: route, remote_ip: ip, method: verb, status: status}
+       ) do
+    case :file.write(
+           file,
+           "#{ip_to_bin(ip)} - [#{DateTime.utc_now()}] - #{verb} #{route} #{status}\n"
+         ) do
       {:error, reason} ->
         IO.puts("Error writing ip log to file #{file}, reason #{reason}")
 
@@ -54,5 +48,14 @@ defmodule FlogWeb.IpLogger do
     end
   end
 
+  # ipv4
   defp ip_to_bin({a, b, c, d}), do: "#{a}.#{b}.#{c}.#{d}"
+
+  # ipv6
+  defp ip_to_bin({0, 0, 0, 0, 0, f}), do: "::#{f}"
+  defp ip_to_bin({0, 0, 0, 0, e, f}), do: "::#{e}:#{f}"
+  defp ip_to_bin({0, 0, 0, d, e, f}), do: "::#{d}:#{e}:#{f}"
+  defp ip_to_bin({0, 0, c, d, e, f}), do: "::#{c}:#{d}:#{e}:#{f}"
+  defp ip_to_bin({0, b, c, d, e, f}), do: "::#{b}:#{c}:#{d}:#{e}:#{f}"
+  defp ip_to_bin({a, b, c, d, e, f}), do: "#{a}:#{b}:#{c}:#{d}:#{e}:#{f}"
 end
